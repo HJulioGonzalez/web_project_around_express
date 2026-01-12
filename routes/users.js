@@ -1,16 +1,11 @@
-const users = require("express").Router();
+const router = require("express").Router();
+const { getAllUsers, createUser } = require("../controllers/users");
 const fs = require("fs");
 const path = require("path");
 const userInfoPath = path.join(__dirname, "..", "data", "users.json");
 
-users.get("/", (req, res) => {
-  fs.readFile(userInfoPath, { encoding: "utf8" }, (err, data) => {
-    if (err) {
-      return res.status(500).json({ message: "issues in user file" });
-    }
-    res.json(JSON.parse(data));
-  });
-});
+router.get("/", getAllUsers);
+router.post("/", createUser);
 
 const doesUserExist = (req, res, next) => {
   const { id } = req.params;
@@ -26,14 +21,4 @@ const doesUserExist = (req, res, next) => {
   });
 };
 
-users.get("/:id", doesUserExist, (req, res) => {
-  const { id } = req.params;
-  fs.readFile(userInfoPath, { encoding: "utf8" }, (err, data) => {
-    if (err) {
-      return res.status(500).json({ message: "issues in user file" });
-    }
-    res.json(JSON.parse(data).find((x) => x["_id"] === id));
-  });
-});
-
-module.exports = users;
+module.exports = router;
