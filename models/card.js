@@ -4,22 +4,18 @@ const regexRules = {
   host: /^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(:\d+)?$/,
   path: /^\/[\w._~:/?%#\[\]@!$&'()*+,;=-]+#?$/,
 };
-const userSchema = new mongoose.Schema({
-  name: {
+
+const cardSchema = new mongoose.Schema({
+    name: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 20,
   },
-  about: {
+  link: {
     type: String,
-    required: true,
-    min: 2,
-    max: 30,
-  },
-  avatar: {
-    type: String,
-    validate: [
+    validate:   
+    [
       {
       validator: v => regexRules.protocol.test(v),
       message: "URL must include protocol"
@@ -41,8 +37,22 @@ const userSchema = new mongoose.Schema({
       message: "Invalid URL path"
     }
     ],
-    required: [true, "avatar URL mandatory"],
+    required: [true, "link URL mandatory"]
+  }, 
+  owner:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }, 
+  likes: {
+  type: [mongoose.Schema.Types.ObjectId],
+  ref: "User",
+  default: [], 
   },
+  createdAt:{
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Card", cardSchema);

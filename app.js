@@ -2,16 +2,15 @@ const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const { PORT = 3000 } = process.env;
-//ojo convertir a path join
 const usersRoutes = require(path.join(__dirname, "routes", "users.js"));
-const cards = require(path.join(__dirname, "routes", "cards.js"));
+const cardsRoutes = require(path.join(__dirname, "routes", "cards.js"));
 const app = express();
 
 mongoose.connect("mongodb://localhost:27017/aroundb");
 app.use(express.json());
 
 app.use("/users", usersRoutes);
-app.use("/cards", cards);
+app.use("/cards", cardsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
