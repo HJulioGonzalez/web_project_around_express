@@ -6,7 +6,7 @@ const regexRules = {
 };
 
 const cardSchema = new mongoose.Schema({
-    name: {
+  name: {
     type: String,
     required: true,
     minlength: 2,
@@ -14,45 +14,44 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    validate:   
-    [
+    validate: [
       {
-      validator: v => regexRules.protocol.test(v),
-      message: "URL must include protocol"
-    },
-    {
-      validator: v => {
-        const noProtocol = v.replace(regexRules.protocol, "");
-        const host = noProtocol.split("/")[0];
-        return regexRules.host.test(host);
+        validator: (v) => regexRules.protocol.test(v),
+        message: "URL protocol incorrect or missed",
       },
-      message: "Invalid host in URL"
-    },
-    {
-      validator: v => {
-        if (!v.includes("/")) return true;
-        const path = v.slice(v.indexOf("/"));
-        return regexRules.path.test(path);
+      {
+        validator: (v) => {
+          const noProtocol = v.replace(regexRules.protocol, "");
+          const host = noProtocol.split("/")[0];
+          return regexRules.host.test(host);
+        },
+        message: "Invalid host in URL",
       },
-      message: "Invalid URL path"
-    }
+      {
+        validator: (v) => {
+          if (!v.includes("/")) return true;
+          const path = v.slice(v.indexOf("/"));
+          return regexRules.path.test(path);
+        },
+        message: "Invalid URL path",
+      },
     ],
-    required: [true, "link URL mandatory"]
-  }, 
-  owner:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }, 
-  likes: {
-  type: [mongoose.Schema.Types.ObjectId],
-  ref: "User",
-  default: [], 
+    required: [true, "link URL mandatory"],
   },
-  createdAt:{
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  likes: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
+  createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Card", cardSchema);

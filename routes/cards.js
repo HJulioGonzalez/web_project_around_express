@@ -1,10 +1,13 @@
 const router = require("express").Router();
 const path = require("path");
-const {getAllCards, createCard} = require("../controllers/cards")
-const fs = require("fs");
-const cardInfoPath = path.join(__dirname, "..", "data", "cards.json");
+const {
+  getAllCards,
+  createCard,
+  deleteCardById,
+} = require("../controllers/cards");
 
 router.get("/", getAllCards);
-router.post("/", createCard)
+router.post("/", createCard);
+router.delete("/:cardId", deleteCardById);
 
 module.exports = router;
