@@ -7,13 +7,35 @@ module.exports.getAllCards = (req, res) => {
     .catch((error) => res.status(500).send({ message: error }));
 };
 
+module.exports.getCardbyId = (req, res) => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        const err = new Error("Card is not in the database");
+        err.statusCode = 404;
+        err.name = "Inexistent user";
+        throw err;
+      }
+      return res.send({ data: card });
+    })
+    .catch((error) =>
+      {const status = error.statusCode || 500;
+        if (error.name === "CastError") {
+    errorMessage = "Invalid card ID format";
+  }
+      res.status(status).send({
+        message: errorMessage,
+      })}
+    );
+};
+
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const newCard = new Card({ name, link, owner: req.user._id });
   const error = newCard.validateSync();
   if (error) {
     return res.status(400).json({
-      message: "Validation failed",
+      message: "Submmited data failed, check fields",
       errors: error.message,
     });
   }

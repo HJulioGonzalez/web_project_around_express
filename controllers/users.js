@@ -6,18 +6,25 @@ module.exports.getUsers = (req, res) => {
     .catch((error) => res.status(500).send({ message: error }));
 };
 
-module.exports.getUserbyId = (req, res) => {
+module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new Error("No existe el usuario");
+        const err = new Error("User is not in the database");
+        err.statusCode = 404;
+        err.name = "Inexistent user";
+        throw err;
       }
       return res.send({ data: user });
     })
     .catch((error) =>
-      res.status(500).send({
-        message: error.message,
-      })
+      {const status = error.statusCode || 500;
+        if (error.name === "CastError") {
+    errorMessage = "Invalid user ID format";
+  };
+      res.status(status).send({
+        message: errorMessage,
+      })}
     );
 };
 
@@ -27,7 +34,7 @@ module.exports.createUser = (req, res) => {
   const error = newUser.validateSync();
   if (error) {
     return res.status(400).json({
-      message: "Validation failed",
+      message: "Submmited data failed, check fields",
       errors: error.message,
     });
   }
@@ -35,4 +42,41 @@ module.exports.createUser = (req, res) => {
     .save()
     .then((users) => res.send({ data: users }))
     .catch((error) => res.status(500).send({ errors: error.message }));
+};
+
+module.exports.deleteUserById = (req, res) => {
+  User.findByIdAndDelete(req.params.id)
+    .then((user) => {
+      if (!user) {
+        throw new Error(`No existe la tarjeta`);
+      }
+      return res.send({ data: `${user.name} user has been delete` });
+    })
+    .catch((error) =>
+      res.status(500).send({
+        message: error.message,
+      })
+    );
+};
+
+module.exports.getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        const err = new Error("User is not in the database");
+        err.statusCode = 404;
+        err.name = "Inexistent user";
+        throw err;
+      }
+      return res.send({ data: user });
+    })
+    .catch((error) =>
+      {const status = error.statusCode || 500;
+        if (error.name === "CastError") {
+    errorMessage = "Invalid user ID format";
+  };
+      res.status(status).send({
+        message: errorMessage,
+      })}
+    );
 };
