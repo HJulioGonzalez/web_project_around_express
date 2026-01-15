@@ -17,15 +17,15 @@ module.exports.getUserById = (req, res) => {
       }
       return res.send({ data: user });
     })
-    .catch((error) =>
-      {const status = error.statusCode || 500;
-        if (error.name === "CastError") {
-    errorMessage = "Invalid user ID format";
-  };
+    .catch((error) => {
+      const status = error.statusCode || 500;
+      if (error.name === "CastError") {
+        errorMessage = "Invalid user ID format";
+      }
       res.status(status).send({
         message: errorMessage,
-      })}
-    );
+      });
+    });
 };
 
 module.exports.createUser = (req, res) => {
@@ -59,24 +59,43 @@ module.exports.deleteUserById = (req, res) => {
     );
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.updateUser = (req, res) => {
+  const updatedUser = {
+    name: "Habib Julio",
+    about: "Mechanical Engineer",
+  };
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        const err = new Error("User is not in the database");
-        err.statusCode = 404;
-        err.name = "Inexistent user";
-        throw err;
-      }
-      return res.send({ data: user });
+      user.name = updatedUser.name;
+      user.about = updatedUser.about;
+      return user.save();
     })
-    .catch((error) =>
-      {const status = error.statusCode || 500;
-        if (error.name === "CastError") {
-    errorMessage = "Invalid user ID format";
-  };
-      res.status(status).send({
-        message: errorMessage,
-      })}
-    );
+    .then((user) => {
+      res.send({
+        message: `${updatedUser.name}-${updatedUser.about}: user updated succesfully`,
+      });
+    })
+    .catch((error) => {
+      res.status(400).send({
+        message: `${error.message}, please double check`,
+      });
+    });
+};
+module.exports.updateAvatarUser = (req, res) => {
+  const updatedUserAvatar = "https://www.habibjulio2.com/webprogrammer";
+  User.findById(req.user._id)
+    .then((user) => {
+      user.avatar = updatedUserAvatar;
+      return user.save();
+    })
+    .then((user) => {
+      res.send({
+        message: `${updatedUserAvatar}: user avatar updated succesfully`,
+      });
+    })
+    .catch((error) => {
+      res.status(400).send({
+        message: `${error.message}, please double check ${updatedUserAvatar}`,
+      });
+    });
 };

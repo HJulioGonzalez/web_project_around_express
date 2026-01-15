@@ -8,4 +8,7 @@ A linter was configured properly according to requirements.
 
 Hot Reloaded was implemented alongside the project.
 
-Three API configured: http://localhost:3000/users, http://localhost:3000/cards and for usersID
+APIs have been cofigured for both cards and users.
+Schema customized validation has been congifured according to regex declarations.
+Route controllers have been deployed succesfully.
+Error management has been properly set. Temporary owner authorization has been configured accordingly to requirements.

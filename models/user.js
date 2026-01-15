@@ -14,32 +14,32 @@ const userSchema = new mongoose.Schema({
   about: {
     type: String,
     required: true,
-    min: 2,
-    max: 30,
+    minlength: 2,
+    maxlength: 30,
   },
   avatar: {
     type: String,
     validate: [
       {
-      validator: v => regexRules.protocol.test(v),
-      message: "URL must include protocol"
-    },
-    {
-      validator: v => {
-        const noProtocol = v.replace(regexRules.protocol, "");
-        const host = noProtocol.split("/")[0];
-        return regexRules.host.test(host);
+        validator: (v) => regexRules.protocol.test(v),
+        message: "URL must include protocol",
       },
-      message: "Invalid host in URL"
-    },
-    {
-      validator: v => {
-        if (!v.includes("/")) return true;
-        const path = v.slice(v.indexOf("/"));
-        return regexRules.path.test(path);
+      {
+        validator: (v) => {
+          const noProtocol = v.replace(regexRules.protocol, "");
+          const host = noProtocol.split("/")[0];
+          return regexRules.host.test(host);
+        },
+        message: "Invalid host in URL",
       },
-      message: "Invalid URL path"
-    }
+      {
+        validator: (v) => {
+          if (!v.includes("/")) return true;
+          const path = v.slice(v.indexOf("/"));
+          return regexRules.path.test(path);
+        },
+        message: "Invalid URL path",
+      },
     ],
     required: [true, "avatar URL mandatory"],
   },
